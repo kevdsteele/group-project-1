@@ -2,26 +2,107 @@ $(document).ready(function () {
 
 
 
-    var settings = {
-        "async": true,
-        "crossDomain": true,
-        "url": "https://sandbox-api.brewerydb.com/v2/breweries/?key=e90031852e06a3a450353766009ce514",
-        "method": "GET",
-        "headers": {
-          "User-Agent": "PostmanRuntime/7.15.0",
-          "Accept": "*/*",
-          "Cache-Control": "no-cache",
-          "Postman-Token": "2abd2cbc-82af-4e63-99a0-e5fd00be3094,af3c8f12-7b09-4724-ad31-181a3df417e3",
-          "Host": "sandbox-api.brewerydb.com",
-          "accept-encoding": "gzip, deflate",
-          "Connection": "keep-alive",
-          "cache-control": "no-cache"
-        }
-      }
-      
-      $.ajax(settings).done(function (response) {
-        console.log(response);
-      });
+    var firebaseConfig = {
+        apiKey: "AIzaSyAbux95eN2Rw33jxWVL_uNqhbM6finArpo",
+        authDomain: "employee-bba55.firebaseapp.com",
+        databaseURL: "https://employee-bba55.firebaseio.com",
+        projectId: "employee-bba55",
+        storageBucket: "",
+        messagingSenderId: "697365741054",
+        appId: "1:697365741054:web:4db29453e3fbb82c"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+
+
+      var database = firebase.database();
+
+var employeeName="";
+var role ="";
+var startDate="";
+var rate="0";
+
+
+$("#submit").on("click", function (event){
+
+event.preventDefault();
+
+
+var employeeName=$("#name").val().trim();
+var role=$("#role").val().trim();
+var startDate=$("#startdate").val().trim();
+var rate=$("#rate").val().trim();
+
+
+var dateFormat = "MM/DD/YY";
+var convertedDate = moment(startDate, dateFormat);
+console.log("converted date is " + convertedDate);
+var monthsWorked =convertedDate.diff(moment(), "months");
+console.log("Months worked is " + monthsWorked);
+var totalBill = monthsWorked*rate;
+
+database.ref().push({
+    emplyeeName: employeeName,
+    role: role,
+    startDate: convertedDate,
+    months: monthsWorked,
+    rate: rate,
+    billed: totalBill,
+    dateAdded: firebase.database.ServerValue.TIMESTAMP
+  });
+
+$("#name").val("");
+$("#role").val("");
+$("#startdate").val("");
+$("#rate").val("");
+
+});
+  
+
+
+database.ref().on("child_added", function(childSnapshot) {
+
+var  tableRow = $("<tr>");
+tableRow.attr("id", "employee-row" + childSnapshot.val().emplyeeName);
+
+var  employeeCell = $("<td>");
+employeeCell.text(childSnapshot.val().emplyeeName);
+
+var  roleCell = $("<td>");
+roleCell.text(childSnapshot.val().role);
+
+var  dateCell = $("<td>");
+dateCell.text(childSnapshot.val().startDate);
+var  rateCell = $("<td>");
+rateCell.text(childSnapshot.val().rate);
+
+var  monthsCell = $("<td>");
+monthsCell.text(childSnapshot.val().months);
+
+var  billCell = $("<td>");
+billCell.text(childSnapshot.val().billed);
+
+
+    $("#employee-table").append(tableRow);
+    $("#employee-row" + childSnapshot.val().emplyeeName).append(employeeCell, roleCell, dateCell,monthsCell, rateCell,billCell);
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

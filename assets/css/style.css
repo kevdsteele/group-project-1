@@ -1,0 +1,17 @@
+#brewery {
+float:left;
+width:40%;
+}
+
+#beers {
+float:right;
+width:60%;
+}
+
+center {
+text-align:center
+}
+
+.card-header {
+width:100%;
+}
